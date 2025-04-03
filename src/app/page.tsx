@@ -49,35 +49,18 @@ export default function Home() {
 
   const handleSend = () => {
     const { delay, delayType, message, webhook } = data;
-    if (!delay || !message || !webhook) return;
+    if ( !message || !webhook) return;
 
     const delayTime = calculateDelay(Number(delay) || 0, delayType);
 
-    setTimeout(async () => {
-      try {
-        const response = await fetch('api/sendMessage', {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message,
-            webhook,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to send message");
-        }
-
-        alert("Message sent successfully!");
-      } catch (error) {
-        alert("Error sending message");
-        console.error("Error:", error);
-      } finally {
-        handleClear()
-      }
-    }, delayTime);
+    if(Number(delay) === 0){
+      sendMessage()
+      return
+    } else {
+      setTimeout(() => {
+        sendMessage();
+      }, delayTime);
+    }
   }
 
   const handleClear = () => {
@@ -88,6 +71,31 @@ export default function Home() {
       webhook: "",
     })
   }
+
+  const sendMessage = async () => {
+    const { message, webhook } = data;
+
+    try {
+      const response = await fetch("/api/sendMessage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message, webhook }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      alert("Message sent successfully!");
+    } catch (error) {
+      alert("Error sending message");
+      console.error("Error:", error);
+    } finally {
+      handleClear();
+    }
+  };
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
