@@ -55,14 +55,15 @@ export default function Home() {
 
     setTimeout(async () => {
       try {
-        console.log('rasdfasdf')
-        console.log('adfasdfas')
-        const response = await fetch(webhook, {
+        const response = await fetch('api/sendMessage', {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: `From John Ezra Paz's Slack Bot: ${message}`  }),
+          body: JSON.stringify({
+            message,
+            webhook,
+          }),
         });
 
         if (!response.ok) {
@@ -141,5 +142,5 @@ const calculateDelay = (delay: number, unit: string) => {
     hours: 60 * 60 * 1000,
   };
 
-  return delay * _.get(timeMultipliers, unit, 1000); // Default to seconds
+  return delay * _.get(timeMultipliers, unit, 1000);
 };
